@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#
+# bash completion for gitr
+#
+
+__gitr_list()
+{
+    [ -z "${GITR_ROOT}" ] && GITR_ROOT=(~/.gitr)
+
+    local root_dir dir
+    for root_dir in "${GITR_ROOT[@]}"
+    do
+        [ -e "${root_dir}" ] || mkdir -p "${root_dir}"
+        [ -d "${root_dir}" ] || echo "'${root_dir}' is not directory." >&2
+
+        while read -r LINE
+        do
+            dir=(${LINE//\// })
+            [ "$1" == "--full-dir" ] && echo -n "${root_dir}/${dir[3]}/"
+            echo "${dir[4]}/${dir[5]}"
+        done < <(find "${root_dir}" -depth 3)
+    done
+}
+
+__gitr_dir()
+{
+    [ -z "$1" ] && return
+
+    local dir
+    while read -r LINE
+    do
+        dir="$(echo "$LINE" | grep "$1")"
+        [ -n "$dir" ] && break
+    done < <(__gitr_list --full-dir)
+
+    echo "${dir:-$1}"
+}
+
+__gitr_clone()
+{
+    [ -z "$1" ] && return
+
+    local dir
+    dir=$(dirname "$1")
+    dir="${dir/git@/}"
+    dir="${dir/git:\/\//}"
+    dir="${dir/http:\/\//}"
+    dir="${dir/https:\/\//}"
+    dir="${dir/://}"
+    dir="${GITR_ROOT[0]}/${dir}"
+
+    [ -d "${dir}" ] || mkdir -p "${dir}" || echo "[clone] can't mkdir error."
+    cd "${dir}" || echo "[clone] can't change directory."
+    git clone "$1" || echo "[clone] can't clone."
+}
+
+__gitr()
+{
+    local cur prev
+    _get_comp_words_by_ref -n : cur prev
+
+    case "$prev" in
+        gitr)
+            COMPREPLY=($(compgen -W "$(__gitr_list)" -- "${cur}"))
+            ;;
+        *)
+            ;;
+    esac
+} &&
+complete -F __gitr gitr
