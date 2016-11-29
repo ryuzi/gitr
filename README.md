@@ -27,7 +27,7 @@ into `bash_completion.d` directory (under `/sw/etc` or `$(brew --prefix)/etc` on
 2. Add the following to your `~/.bash_profile` or `~/.profile`
  ```sh
  export GITR_ROOT=(~/.gitr)
- gitr(){ cd "$(__gitr_dir "$1")" 2> /dev/null || __gitr_clone "$1"; }
+ gitr(){ cd "$(__gitr_dir "$1")" 2> /dev/null || __gitr_clone "$@"; }
  ```
 
 3. Restart your shell

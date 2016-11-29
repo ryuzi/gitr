@@ -40,7 +40,7 @@ __gitr_clone()
 {
     [ -z "$1" ] && return
 
-    local dir
+    local dir opts
     dir=$(dirname "$1")
     dir="${dir/git@/}"
     dir="${dir/git:\/\//}"
@@ -48,10 +48,11 @@ __gitr_clone()
     dir="${dir/https:\/\//}"
     dir="${dir/://}"
     dir="${GITR_ROOT[0]}/${dir}"
+    opts=("$@")
 
-    [ -d "${dir}" ] || mkdir -p "${dir}" || echo "[clone] can't mkdir error."
-    cd "${dir}" || echo "[clone] can't change directory."
-    git clone "$1" || echo "[clone] can't clone."
+    [ -d "${dir}" ] || mkdir -p "${dir}" || echo "[gitr] mkdir error." >&2
+    cd "${dir}" || echo "[gitr] change directory error." >&2
+    git clone "${opts[@]:1}" "$1" || echo "[gitr] clone error." >&2
 }
 
 __gitr()
