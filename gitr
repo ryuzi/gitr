@@ -18,7 +18,7 @@ __gitr_list()
             dir=(${LINE//\// })
             [ "$1" == "--full-dir" ] && echo -n "${root_dir}/${dir[3]}/"
             echo "${dir[4]}/${dir[5]}"
-        done < <(find "${root_dir}" -depth 3)
+        done < <(find "${root_dir}" -mindepth 3 -maxdepth 3)
     done
 }
 
