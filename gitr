@@ -70,7 +70,7 @@ __gitr()
         gitr)
             local suggestions
             mapfile -t suggestions < <(__gitr_list)
-            COMPREPLY=( $(compgen -W "${suggestions[*]}" -- "${cur}") )
+            mapfile -t COMPREPLY < <(compgen -W "$(printf '%s\n' "${suggestions[@]}")" -- "${cur}")
             ;;
         *)
             ;;
