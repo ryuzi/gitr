@@ -15,11 +15,11 @@ __gitr_list()
 
         while read -r LINE
         do
-            rel="${LINE#${root_dir}/}"
+            rel="${LINE#"${root_dir}"/}"
             if [ "$1" == "--full-dir" ]; then
-                echo "${root_dir}/${rel}"
+                printf '%s\n' "${root_dir}/${rel}"
             else
-                echo "${rel}"
+                printf '%s\n' "${rel}"
             fi
         done < <(find "${root_dir}" -mindepth 3 -maxdepth 3)
     done
@@ -68,7 +68,9 @@ __gitr()
 
     case "$prev" in
         gitr)
-            COMPREPLY=($(compgen -W "$(__gitr_list)" -- "${cur}"))
+            local suggestions
+            mapfile -t suggestions < <(__gitr_list)
+            COMPREPLY=( $(compgen -W "${suggestions[*]}" -- "${cur}") )
             ;;
         *)
             ;;
